@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,6 +12,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -18,7 +20,9 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
-    
+    public TextMeshProUGUI BestScoreText;// Added to show best score
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +39,12 @@ public class MainManager : MonoBehaviour
                 brick.PointValue = pointCountArray[i];
                 brick.onDestroyed.AddListener(AddPoint);
             }
+        }
+
+        // Display best score at the start
+        if (DataManager.Instance != null && DataManager.Instance.BestScore > 0)
+        {
+            BestScoreText.text = $"Best : {DataManager.Instance.BestPlayerName} : {DataManager.Instance.BestScore}";
         }
     }
 
@@ -72,5 +82,18 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+        // Check and set new best score
+        if (DataManager.Instance != null)
+        {
+            DataManager.Instance.TrySetNewBestScore(m_Points);
+        }
+        
+        // Update best score display
+        if (BestScoreText != null)
+            {
+                BestScoreText.text = $"Best : {DataManager.Instance.BestPlayerName} : {DataManager.Instance.BestScore}";
+            }
+        }
     }
-}
+
